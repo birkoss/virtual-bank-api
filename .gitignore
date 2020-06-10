@@ -1,0 +1,12 @@
+._*
+.DS_Store
+
+__pycache__/
+
+db.sqlite3
+secrets.json
+
+# Apache auto-generated file
+passenger_wsgi.py
+stderr.log
+tmp/
