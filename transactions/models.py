@@ -7,9 +7,15 @@ from users.models import User
 class AccountStatus(models.Model):
     name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return self.name
+
 
 class AccountType(models.Model):
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class Account(UUIDModel, TimeStampedModel, models.Model):
@@ -18,9 +24,15 @@ class Account(UUIDModel, TimeStampedModel, models.Model):
     status = models.ForeignKey(AccountStatus, on_delete=models.CASCADE)
     balance = models.IntegerField(default=0)
 
+    def __str__(self):
+        return self.user.email + " - " + str(self.id)
+
 
 class TransactionCategory(models.Model):
     name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
 
 
 class Transaction(UUIDModel, TimeStampedModel, models.Model):
