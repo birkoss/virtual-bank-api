@@ -1,0 +1,23 @@
+[
+    {
+        "model": "transactions.accountstatus",
+        "pk": 1,
+        "fields": {
+            "name": "Active"
+        }
+    },
+    {
+        "model": "transactions.accountstatus",
+        "pk": 2,
+        "fields": {
+            "name": "Closed"
+        }
+    },
+    {
+        "model": "transactions.accounttype",
+        "pk": 1,
+        "fields": {
+            "name": "Checking"
+        }
+    }
+]

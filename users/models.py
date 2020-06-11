@@ -7,12 +7,12 @@ from django.dispatch import receiver
 
 from rest_framework.authtoken.models import Token
 
-from core.models import TimeStampedModel
+from core.models import TimeStampedModel, UUIDModel
 
 from .managers import UserManager
 
 
-class User(PermissionsMixin, TimeStampedModel, AbstractBaseUser):
+class User(PermissionsMixin, UUIDModel, TimeStampedModel, AbstractBaseUser):
     email = models.EmailField(
         verbose_name='email address',
         max_length=255,
