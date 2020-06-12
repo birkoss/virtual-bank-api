@@ -54,6 +54,26 @@ class registerUser(APIView):
             }, status=status.HTTP_404_NOT_FOUND)
 
 
+class usersDetails(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, user_id, format=None):
+        # Is this a valid user ?
+        user = User.objects.filter(
+            id=user_id, families__master=request.user).first()
+        if user is None:
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                "message": "This is not a valid user"
+            }, status.HTTP_404_NOT_FOUND)
+
+        user.delete()
+        return Response({
+            "status": status.HTTP_200_OK
+        })
+
+
 class users(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
