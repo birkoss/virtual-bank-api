@@ -58,6 +58,16 @@ class users(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request, format=None):
+        users = User.objects.filter(
+            families__master=request.user).order_by("firstname")
+        serializer = UserSerializer(instance=users, many=True)
+
+        return Response({
+            'users': serializer.data,
+            'status': status.HTTP_200_OK,
+        })
+
     def post(self, request, format=None):
         serializer = UserSerializer(data=request.data)
 
@@ -72,7 +82,6 @@ class users(APIView):
             )
 
             # Add it to our family
-            print(request.user)
             current_user = User.objects.get(pk=request.user.id)
             family = Family(slave=user, master=current_user)
             family.save()
