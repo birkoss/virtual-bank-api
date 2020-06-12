@@ -5,7 +5,6 @@ from users.api.serializers import UserSerializer
 from ..models import Account, AccountType, AccountStatus
 
 
-
 class AccountStatusSerializer(serializers.ModelSerializer):
     class Meta:
         model = AccountStatus

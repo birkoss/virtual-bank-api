@@ -5,7 +5,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import User
+from ..models import User, Family
 
 from .serializers import UserSerializer
 
@@ -46,6 +46,39 @@ class registerUser(APIView):
             return Response({
                 'status': status.HTTP_200_OK,
                 'token': token.key,
+            })
+        else:
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                'message': serializer.errors,
+            }, status=status.HTTP_404_NOT_FOUND)
+
+
+class users(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+
+        if serializer.is_valid():
+            # Add the new user
+            user = User.objects.create_user(
+                serializer.data['email'],
+                request.data['password'],
+                firstname=request.data['firstname'],
+                lastname=request.data['lastname'],
+                is_children=request.data['isChildren']
+            )
+
+            # Add it to our family
+            print(request.user)
+            current_user = User.objects.get(pk=request.user.id)
+            family = Family(slave=user, master=current_user)
+            family.save()
+
+            return Response({
+                'status': status.HTTP_200_OK,
             })
         else:
             return Response({

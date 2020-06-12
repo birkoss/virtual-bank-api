@@ -22,6 +22,7 @@ class User(PermissionsMixin, UUIDModel, TimeStampedModel, AbstractBaseUser):
     is_staff = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_superuser = models.BooleanField(default=False)
+    is_children = models.BooleanField(default=False)
 
     firstname = models.CharField(max_length=100, default='')
     lastname = models.CharField(max_length=100, default='')
@@ -39,3 +40,14 @@ class User(PermissionsMixin, UUIDModel, TimeStampedModel, AbstractBaseUser):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+class Family(models.Model):
+    """ Model to represent Friendships """
+    slave = models.ForeignKey(
+        User, models.CASCADE, related_name='families')
+    master = models.ForeignKey(
+        User, models.CASCADE, related_name='_unused_friend_relation')
+
+    def __str__(self):
+        return self.master.__str__() + " -> " + self.slave.__str__()
