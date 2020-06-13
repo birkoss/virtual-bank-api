@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 from rest_framework import status, authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -32,7 +34,7 @@ class transactionsCategories(APIView):
 
     def get(self, request, format=None):
         categories = TransactionCategory.objects.filter(
-            user=request.user).order_by("name")
+            user=request.user).annotate(transactions=Count('transaction')).order_by("name")
         serializer = TransactionCategorySerializer(
             instance=categories, many=True)
 
@@ -42,7 +44,7 @@ class transactionsCategories(APIView):
         }, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        serializer = TransactionCategorySerializer(data=request.data)
+        serializer = TransactionCategoryWriteSerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(user=request.user)

@@ -28,6 +28,14 @@ class AccountSerializer(serializers.ModelSerializer):
 
 
 class TransactionCategorySerializer(serializers.ModelSerializer):
+    transactions = serializers.IntegerField()
+
+    class Meta:
+        model = TransactionCategory
+        fields = ['id', 'name', 'transactions']
+
+
+class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionCategory
         fields = ['id', 'name']
