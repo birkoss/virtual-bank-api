@@ -53,6 +53,7 @@ class Family(models.Model):
 
 
 class FamilyMember(models.Model):
+    family = models.ForeignKey(Family, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User, models.CASCADE)
 
