@@ -4,7 +4,8 @@ from users.api.serializers import UserSerializer
 
 from users.models import User
 
-from ..models import Account, AccountType, AccountStatus, Transaction, TransactionCategory
+from ..models import (Account, AccountType, AccountStatus,
+                      Transaction, TransactionCategory)
 
 
 class AccountStatusSerializer(serializers.ModelSerializer):

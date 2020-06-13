@@ -8,7 +8,9 @@ from rest_framework.views import APIView
 
 from ..models import Account, TransactionCategory
 
-from .serializers import AccountSerializer, TransactionWriteSerializer, TransactionCategorySerializer, TransactionCategoryWriteSerializer
+from .serializers import (AccountSerializer, TransactionWriteSerializer,
+                          TransactionCategorySerializer,
+                          TransactionCategoryWriteSerializer)
 
 
 class transactions(APIView):
@@ -17,7 +19,8 @@ class transactions(APIView):
 
     def get(self, request, format=None):
         categories = TransactionCategory.objects.filter(
-            user=request.user).annotate(transactions=Count('transaction')).order_by("name")
+            user=request.user
+        ).annotate(transactions=Count('transaction')).order_by("name")
         serializer = TransactionCategorySerializer(
             instance=categories, many=True)
 
@@ -73,7 +76,8 @@ class transactionsCategories(APIView):
 
     def get(self, request, format=None):
         categories = TransactionCategory.objects.filter(
-            user=request.user).annotate(transactions=Count('transaction')).order_by("name")
+            user=request.user
+        ).annotate(transactions=Count('transaction')).order_by("name")
         serializer = TransactionCategorySerializer(
             instance=categories, many=True)
 

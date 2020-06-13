@@ -14,7 +14,9 @@ class loginUser(APIView):
     def post(self, request, format=None):
 
         user = authenticate(
-            request, email=request.data['email'], password=request.data['password'])
+            request,
+            email=request.data['email'],
+            password=request.data['password'])
         if user is None:
             return Response({
                 "status": status.HTTP_404_NOT_FOUND,
