@@ -1,10 +1,12 @@
 from datetime import datetime
 
-from django.db.models import Count
+from django.db.models import Count, Q
 
 from rest_framework import status, authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from users.models import User
 
 from ..models import Account, TransactionCategory
 
@@ -115,3 +117,28 @@ class stats(APIView):
             'status': status.HTTP_200_OK,
             'accounts': serializer.data,
         })
+
+
+class accounts(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        user = User.objects.filter(pk=request.user.pk).first()
+        print(user.friends)
+        print(request.user.friends)
+        filters = Q()
+        filters.add(Q(user__families__slave=request.user), Q.OR)
+        filters.add(Q(user__friends__slave=request.user), Q.OR)
+
+        accounts = Account.objects.filter(
+            filters
+        ).order_by("user__firstname")
+
+        serializer = AccountSerializer(
+            instance=accounts, many=True)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'accounts': serializer.data
+        }, status=status.HTTP_200_OK)

@@ -22,4 +22,10 @@ urlpatterns = [
         api_views.transactionsCategoriesDetails.as_view(),
         name='transactions-categories-details'
     ),
+
+    path(
+        'api/accounts',
+        api_views.accounts.as_view(),
+        name='accounts'
+    ),
 ]

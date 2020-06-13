@@ -41,13 +41,20 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
+# @TODO Create a Checking Account when an user is created
+
 
 class Family(models.Model):
-    """ Model to represent Friendships """
-    slave = models.ForeignKey(
-        User, models.CASCADE, related_name='families')
-    master = models.ForeignKey(
-        User, models.CASCADE, related_name='_unused_friend_relation')
+    user = models.ForeignKey(
+        User, models.CASCADE)
 
     def __str__(self):
-        return self.master.__str__() + " -> " + self.slave.__str__()
+        return self.user.__str__()
+
+
+class FamilyMember(models.Model):
+    user = models.ForeignKey(
+        User, models.CASCADE)
+
+    def __str__(self):
+        return self.user.__str__()
