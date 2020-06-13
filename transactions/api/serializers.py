@@ -27,7 +27,7 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = ['id', 'balance', 'type', 'status', 'user']
 
 
-class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
+class TransactionCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionCategory
         fields = ['id', 'name']

@@ -4,7 +4,26 @@ from rest_framework.views import APIView
 
 from ..models import Account, TransactionCategory
 
-from .serializers import AccountSerializer
+from .serializers import AccountSerializer, TransactionCategorySerializer
+
+
+class transactionsCategoriesDetails(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, category_id, format=None):
+        category = TransactionCategory.objects.filter(
+            id=category_id, user=request.user).first()
+        if category is None:
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                "message": "This is not a valid category"
+            }, status.HTTP_404_NOT_FOUND)
+
+        category.delete()
+        return Response({
+            "status": status.HTTP_200_OK
+        })
 
 
 class transactionsCategories(APIView):
@@ -14,15 +33,16 @@ class transactionsCategories(APIView):
     def get(self, request, format=None):
         categories = TransactionCategory.objects.filter(
             user=request.user).order_by("name")
-        serializer = TaskSerializer(instance=categories, many=True)
+        serializer = TransactionCategorySerializer(
+            instance=categories, many=True)
 
         return Response({
             'status': status.HTTP_200_OK,
-            'tasks': serializer.data
+            'transactionsCategories': serializer.data
         }, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
-        serializer = TransactionCategoryWriteSerializer(data=request.data)
+        serializer = TransactionCategorySerializer(data=request.data)
 
         if serializer.is_valid():
             serializer.save(user=request.user)
