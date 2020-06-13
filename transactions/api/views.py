@@ -6,7 +6,7 @@ from rest_framework.views import APIView
 
 from ..models import Account, TransactionCategory
 
-from .serializers import AccountSerializer, TransactionCategorySerializer
+from .serializers import AccountSerializer, TransactionCategorySerializer, TransactionCategoryWriteSerializer
 
 
 class transactionsCategoriesDetails(APIView):
