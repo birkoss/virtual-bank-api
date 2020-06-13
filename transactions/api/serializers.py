@@ -2,7 +2,7 @@ from rest_framework import serializers
 
 from users.api.serializers import UserSerializer
 
-from ..models import Account, AccountType, AccountStatus
+from ..models import Account, AccountType, AccountStatus, TransactionCategory
 
 
 class AccountStatusSerializer(serializers.ModelSerializer):
@@ -25,3 +25,9 @@ class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
         fields = ['id', 'balance', 'type', 'status', 'user']
+
+
+class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TransactionCategory
+        fields = ['id', 'name']

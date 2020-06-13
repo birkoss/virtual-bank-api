@@ -29,6 +29,8 @@ class Account(UUIDModel, TimeStampedModel, models.Model):
 
 
 class TransactionCategory(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
     name = models.CharField(max_length=100)
 
     def __str__(self):
