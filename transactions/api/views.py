@@ -26,7 +26,8 @@ class transactions(APIView):
 
         transactions = Transaction.objects.filter(
             filters
-        ).order_by("-date_added")
+        ).order_by("-date_added")[:30]
+
         serializer = TransactionSerializer(
             instance=transactions, many=True)
 
