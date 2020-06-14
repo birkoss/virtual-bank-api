@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from transactions.models import Account
+from transactions.api.serializers import UserSerializer as TransactionsUserSerializer
 
 from ..models import User, Family, FamilyMember
 
@@ -100,7 +101,7 @@ class users(APIView):
         family = Family.objects.filter(familymember__user=request.user).first()
         users = User.objects.filter(
             familymember__family=family).order_by("firstname")
-        serializer = UserSerializer(instance=users, many=True)
+        serializer = TransactionsUserSerializer(instance=users, many=True)
 
         return Response({
             'users': serializer.data,
