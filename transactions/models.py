@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 from core.models import TimeStampedModel, UUIDModel
 from users.models import User
@@ -26,6 +28,17 @@ class Account(UUIDModel, TimeStampedModel, models.Model):
 
     def __str__(self):
         return self.user.email + " - " + str(self.id)
+
+
+# Create a Checking Account when an user is created
+@receiver(post_save, sender=User)
+def create_checking_account(sender, instance=None, created=False, **kwargs):
+    if created:
+        Account.objects.create(
+            user=instance,
+            status=AccountStatus.objects.filter(pk=1).first(),
+            type=AccountType.objects.filter(pk=1).first()
+        )
 
 
 class TransactionCategory(models.Model):

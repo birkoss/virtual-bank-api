@@ -98,10 +98,8 @@ class users(APIView):
 
     def get(self, request, format=None):
         family = Family.objects.filter(familymember__user=request.user).first()
-        print(family)
         users = User.objects.filter(
             familymember__family=family).order_by("firstname")
-        print(users)
         serializer = UserSerializer(instance=users, many=True)
 
         return Response({
