@@ -54,13 +54,13 @@ class transactions(APIView):
             account.save()
 
             # Increate the receiver balance
-            account = Account.objects.filter(
+            account2 = Account.objects.filter(
                 pk=serializer.data['account_to']).first()
-            account.balance += amount
-            account.save()
+            account2.balance += amount
+            account2.save()
 
             return Response({
-                'balance': 100,  # @TODO: Return the correct balance
+                'balance': account.balance,
                 'status': status.HTTP_200_OK,
             })
         else:
