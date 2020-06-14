@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from transactions.models import Account
-from transactions.api.serializers import UserSerializer as TransactionsUserSerializer
+from transactions.api.serializers import UserSerializer as TranUserSerializer
 
 from ..models import User, Family, FamilyMember
 
@@ -78,9 +78,17 @@ class usersDetails(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def delete(self, request, user_id, format=None):
-        # Is this a valid user ?
+        if user_id == str(request.user.id):
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                "message": "You cannot delete your own user"
+            }, status.HTTP_404_NOT_FOUND)
+
+        # Is this a valid user in our family ?
+        family = Family.objects.filter(familymember__user=request.user).first()
         user = User.objects.filter(
-            id=user_id, families__master=request.user).first()
+            familymember__family=family, id=user_id).first()
+
         if user is None:
             return Response({
                 "status": status.HTTP_404_NOT_FOUND,
@@ -101,7 +109,7 @@ class users(APIView):
         family = Family.objects.filter(familymember__user=request.user).first()
         users = User.objects.filter(
             familymember__family=family).order_by("firstname")
-        serializer = TransactionsUserSerializer(instance=users, many=True)
+        serializer = TranUserSerializer(instance=users, many=True)
 
         return Response({
             'users': serializer.data,
