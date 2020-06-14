@@ -37,10 +37,27 @@ class transactions(APIView):
         account = Account.objects.filter(user=request.user).first()
 
         if serializer.is_valid():
+            # Watch the balance first
+            if account.balance < int(request.data['amount']):
+                return Response({
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    'message': "Not enough balance to do this",
+                }, status=status.HTTP_400_BAD_REQUEST)
+
             serializer.save(account_from=account,
                             date_validated=datetime.now())
 
-            # Reduce the balance and increase the other balance
+            amount = serializer.data['amount']
+
+            # Reduce the balance of the sender
+            account.balance -= amount
+            account.save()
+
+            # Increate the receiver balance
+            account = Account.objects.filter(
+                pk=serializer.data['account_to']).first()
+            account.balance += amount
+            account.save()
 
             return Response({
                 'balance': 100,  # @TODO: Return the correct balance
