@@ -6,11 +6,12 @@ from rest_framework import status, authentication, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import User
+from users.models import User, Family
 
 from ..models import Account, TransactionCategory, Transaction
 
-from .serializers import (AccountSerializer, TransactionSerializer, TransactionWriteSerializer,
+from .serializers import (AccountSerializer, TransactionSerializer,
+                          TransactionWriteSerializer,
                           TransactionCategorySerializer,
                           TransactionCategoryWriteSerializer)
 
@@ -163,4 +164,23 @@ class accounts(APIView):
         return Response({
             'status': status.HTTP_200_OK,
             'accounts': serializer.data
+        }, status=status.HTTP_200_OK)
+
+
+class transactionsStats(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        family = Family.objects.filter(familymember__user=request.user).first()
+
+        categories = TransactionCategory.objects.filter(
+            user__family=family
+        ).annotate(transactions=Count('transaction')).order_by("name")
+        serializer = TransactionCategorySerializer(
+            instance=categories, many=True)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'transactionsCategories': serializer.data
         }, status=status.HTTP_200_OK)

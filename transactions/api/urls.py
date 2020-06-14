@@ -13,6 +13,12 @@ urlpatterns = [
     ),
 
     path(
+        'api/transactionsStats',
+        api_views.transactionsStats.as_view(),
+        name='transactions-stats'
+    ),
+
+    path(
         'api/transactionsCategories',
         api_views.transactionsCategories.as_view(),
         name='transactions-categories'
