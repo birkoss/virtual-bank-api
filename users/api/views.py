@@ -42,7 +42,10 @@ class registerUser(APIView):
         if serializer.is_valid():
             user = User.objects.create_user(
                 serializer.data['email'],
-                request.data['password']
+                request.data['password'],
+                firstname=serializer.data['firstname'],
+                lastname=serializer.data['lastname'],
+                is_children=False
             )
 
             token = Token.objects.get(user=user)
@@ -94,8 +97,11 @@ class users(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
+        family = Family.objects.filter(familymember__user=request.user).first()
+        print(family)
         users = User.objects.filter(
-            families__master=request.user).order_by("firstname")
+            familymember__family=family).order_by("firstname")
+        print(users)
         serializer = UserSerializer(instance=users, many=True)
 
         return Response({
@@ -117,9 +123,10 @@ class users(APIView):
             )
 
             # Add it to our family
-            current_user = User.objects.get(pk=request.user.id)
-            family = Family(slave=user, master=current_user)
-            family.save()
+            family = Family.objects.filter(user=request.user).first()
+
+            familyMember = FamilyMember(user=user, family=family)
+            familyMember.save()
 
             return Response({
                 'status': status.HTTP_200_OK,
