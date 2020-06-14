@@ -5,7 +5,9 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from ..models import User, Family
+from transactions.models import Account
+
+from ..models import User, Family, FamilyMember
 
 from .serializers import UserSerializer
 
@@ -44,6 +46,17 @@ class registerUser(APIView):
             )
 
             token = Token.objects.get(user=user)
+
+            # Create a Family instance
+            family = Family(user=user)
+            family.save()
+
+            # Create a FamilyMember
+            familyMember = FamilyMember(user=user, family=family)
+            familyMember.save()
+
+            # Set balance of the current account to 1000
+            Account.objects.filter(user=user).update(balance=1000)
 
             return Response({
                 'status': status.HTTP_200_OK,

@@ -1,5 +1,6 @@
 import uuid
 
+from django.apps import apps
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.db.models.signals import post_save
@@ -41,7 +42,18 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-# @TODO Create a Checking Account when an user is created
+
+# Create a Checking Account when an user is created
+@receiver(post_save, sender=User)
+def create_checking_account(sender, instance=None, created=False, **kwargs):
+    if created:
+        apps.get_model('transactions', 'Account').objects.create(
+            user=instance,
+            status=apps.get_model(
+                'transactions', 'AccountStatus').objects.filter(pk=1).first(),
+            type=apps.get_model(
+                'transactions', 'AccountType').objects.filter(pk=1).first()
+        )
 
 
 class Family(models.Model):
