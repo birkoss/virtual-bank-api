@@ -8,9 +8,9 @@ from rest_framework.views import APIView
 
 from users.models import User
 
-from ..models import Account, TransactionCategory
+from ..models import Account, TransactionCategory, Transaction
 
-from .serializers import (AccountSerializer, TransactionWriteSerializer,
+from .serializers import (AccountSerializer, TransactionSerializer, TransactionWriteSerializer,
                           TransactionCategorySerializer,
                           TransactionCategoryWriteSerializer)
 
@@ -20,15 +20,19 @@ class transactions(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        categories = TransactionCategory.objects.filter(
-            user=request.user
-        ).annotate(transactions=Count('transaction')).order_by("name")
-        serializer = TransactionCategorySerializer(
-            instance=categories, many=True)
+        filters = Q()
+        filters.add(Q(account_to__user=request.user), Q.OR)
+        filters.add(Q(account_from__user=request.user), Q.OR)
+
+        transactions = Transaction.objects.filter(
+            filters
+        ).order_by("-date_added")
+        serializer = TransactionSerializer(
+            instance=transactions, many=True)
 
         return Response({
             'status': status.HTTP_200_OK,
-            'transactionsCategories': serializer.data
+            'transactions': serializer.data
         }, status=status.HTTP_200_OK)
 
     def post(self, request, format=None):
