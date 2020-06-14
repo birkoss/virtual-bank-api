@@ -27,11 +27,10 @@ class AccountPreviewSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     type = AccountTypeSerializer(read_only=True)
     status = AccountStatusSerializer(read_only=True)
-    user = AccountStatusSerializer(read_only=True)
 
     class Meta:
         model = Account
-        fields = ['id', 'balance', 'type', 'status', 'user']
+        fields = ['id', 'balance', 'type', 'status']
 
 
 class TransactionWriteSerializer(serializers.ModelSerializer):
