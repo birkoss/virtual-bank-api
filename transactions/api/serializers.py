@@ -18,9 +18,16 @@ class AccountTypeSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+class AccountPreviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Account
+        fields = ['id']
+
+
 class AccountSerializer(serializers.ModelSerializer):
     type = AccountTypeSerializer(read_only=True)
     status = AccountStatusSerializer(read_only=True)
+    user = AccountStatusSerializer(read_only=True)
 
     class Meta:
         model = Account
@@ -48,7 +55,7 @@ class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    accounts = AccountSerializer(source='account_set', many=True)
+    accounts = AccountPreviewSerializer(source='account_set', many=True)
 
     class Meta:
         model = User
