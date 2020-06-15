@@ -4,33 +4,33 @@ from . import views as api_views
 
 
 urlpatterns = [
-    path('api/stats', api_views.stats.as_view(), name='stats'),
+    path('v1/stats', api_views.stats.as_view(), name='stats'),
 
     path(
-        'api/transactions',
+        'v1/transactions',
         api_views.transactions.as_view(),
         name='transactions'
     ),
 
     path(
-        'api/transactionsStats',
+        'v1/transactionsStats',
         api_views.transactionsStats.as_view(),
         name='transactions-stats'
     ),
 
     path(
-        'api/transactionsCategories',
+        'v1/transactionsCategories',
         api_views.transactionsCategories.as_view(),
         name='transactions-categories'
     ),
     path(
-        'api/transactionsCategories/<str:category_id>',
+        'v1/transactionsCategories/<str:category_id>',
         api_views.transactionsCategoriesDetails.as_view(),
         name='transactions-categories-details'
     ),
 
     path(
-        'api/accounts',
+        'v1/accounts',
         api_views.accounts.as_view(),
         name='accounts'
     ),
