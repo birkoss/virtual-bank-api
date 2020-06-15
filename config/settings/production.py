@@ -1,8 +1,6 @@
 from .base import *
 
-
-ALLOWED_HOSTS = ['django.birkoss.com']
-
+ALLOWED_HOSTS = ['api.kidbux.app']
 
 DATABASES = {
     'default': {
@@ -17,3 +15,7 @@ DATABASES = {
         }
     }
 }
+
+STATIC_URL = 'https://kidbux.app/assets/api/'
+STATIC_ROOT = '/home/kidbux/domains/kidbux.app/public_html/assets/api/'
+
