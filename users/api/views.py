@@ -85,9 +85,8 @@ class usersDetails(APIView):
             }, status.HTTP_404_NOT_FOUND)
 
         # Is this a valid user in our family ?
-        family = Family.objects.filter(familymember__user=request.user).first()
         user = User.objects.filter(
-            familymember__family=family, id=user_id).first()
+            familymember__family__familymember__user=request.user, id=user_id).first()
 
         if user is None:
             return Response({

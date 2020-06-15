@@ -172,11 +172,11 @@ class transactionsStats(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        family = Family.objects.filter(familymember__user=request.user).first()
-
         categories = TransactionCategory.objects.filter(
-            user__family=family
+            user__family__familymember__user=request.user,
+            transaction__account_to__user=request.user
         ).annotate(transactions=Count('transaction')).order_by("name")
+
         serializer = TransactionCategorySerializer(
             instance=categories, many=True)
 
