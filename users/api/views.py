@@ -86,7 +86,8 @@ class usersDetails(APIView):
 
         # Is this a valid user in our family ?
         user = User.objects.filter(
-            familymember__family__familymember__user=request.user, id=user_id).first()
+            familymember__family__familymember__user=request.user, id=user_id
+        ).first()
 
         if user is None:
             return Response({
