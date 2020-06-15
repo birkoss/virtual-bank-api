@@ -143,3 +143,17 @@ class users(APIView):
                 "status": status.HTTP_404_NOT_FOUND,
                 'message': serializer.errors,
             }, status=status.HTTP_404_NOT_FOUND)
+
+
+class account(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+
+        serializer = TranUserSerializer(instance=request.user)
+
+        return Response({
+            'account': serializer.data,
+            'status': status.HTTP_200_OK,
+        })
