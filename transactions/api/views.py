@@ -101,7 +101,8 @@ class transactionsCategories(APIView):
 
     def get(self, request, format=None):
         categories = TransactionCategory.objects.filter(
-            user=request.user
+            user=request.user,
+            is_active=True
         ).annotate(transactions=Count('transaction')).order_by("name")
         serializer = TransactionCategorySerializer(
             instance=categories, many=True)
