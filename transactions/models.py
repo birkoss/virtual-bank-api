@@ -57,7 +57,8 @@ class Transaction(UUIDModel, TimeStampedModel, models.Model):
         Account, related_name="account_from", on_delete=models.CASCADE)
     account_to = models.ForeignKey(
         Account, related_name="account_to", on_delete=models.CASCADE)
-    category = models.ForeignKey(TransactionCategory, on_delete=models.CASCADE)
+    category = models.ForeignKey(
+        TransactionCategory, null=True, blank=True, on_delete=models.CASCADE)
     amount = models.IntegerField(default=0)
     date_validated = models.DateTimeField(null=True)
     description = models.CharField(max_length=200, blank=True)

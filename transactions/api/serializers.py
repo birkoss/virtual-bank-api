@@ -86,7 +86,6 @@ class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
-# @TODO : Verify instance and remove if not used anymore
 class UserSerializer(serializers.ModelSerializer):
     accounts = AccountSerializer(source='account_set', many=True)
 

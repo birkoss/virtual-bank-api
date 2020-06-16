@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth import login, authenticate
 
 from rest_framework import status, authentication, permissions
@@ -5,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from transactions.models import Account
+from transactions.models import Account, Transaction
 from transactions.api.serializers import (
     UserSerializer as TranUserSerializer, FamilyMemberSerializer)
 
@@ -60,9 +62,19 @@ class registerUser(APIView):
             familyMember = FamilyMember(user=user, family=family)
             familyMember.save()
 
-            # Set balance of the current account to 1000
-            # @TODO: Make this a tracable transaction (without category? to make it a system transaction)
-            Account.objects.filter(user=user).update(balance=1000)
+            # Set balance of the current account to 1000 and an initial transaction
+            account = Account.objects.filter(user=user).first()
+            newBalance = 1000
+
+            transaction = Transaction(
+                account_to=account,
+                account_from=account,
+                amount=newBalance,
+                date_validated=datetime.now()
+            )
+            transaction.save()
+
+            Account.objects.filter(user=user).update(balance=newBalance)
 
             return Response({
                 'status': status.HTTP_200_OK,
