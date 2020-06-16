@@ -82,14 +82,21 @@ class transactionsCategoriesDetails(APIView):
 
     def delete(self, request, category_id, format=None):
         category = TransactionCategory.objects.filter(
-            id=category_id, user=request.user).first()
+            id=category_id, user=request.user
+        ).annotate(transactions=Count('transaction')).first()
+
         if category is None:
             return Response({
                 "status": status.HTTP_404_NOT_FOUND,
                 "message": "This is not a valid category"
             }, status.HTTP_404_NOT_FOUND)
 
-        category.delete()
+        if category.transactions == 0:
+            category.delete()
+        else:
+            category.is_active = False
+            category.save()
+
         return Response({
             "status": status.HTTP_200_OK
         })
