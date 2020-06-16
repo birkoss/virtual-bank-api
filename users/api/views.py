@@ -124,6 +124,7 @@ class users(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
+        # This is only for Parents
         if request.user.is_children:
             return Response({
                 "status": status.HTTP_401_UNAUTHORIZED,
@@ -141,6 +142,13 @@ class users(APIView):
         })
 
     def post(self, request, format=None):
+        # This is only for Parents
+        if request.user.is_children:
+            return Response({
+                "status": status.HTTP_401_UNAUTHORIZED,
+                'message': "Children can't access this.",
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
         serializer = UserSerializer(data=request.data)
 
         if serializer.is_valid():
