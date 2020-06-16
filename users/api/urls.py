@@ -9,6 +9,9 @@ urlpatterns = [
 
     path('v1/account', api_views.account.as_view(), name='account'),
 
+    path('v1/familyMembers', api_views.familyMembers.as_view(),
+         name='family-members'),
+
     path('v1/users', api_views.users.as_view(), name='users'),
     path('v1/users/<str:user_id>',
          api_views.usersDetails.as_view(), name='users-details'),

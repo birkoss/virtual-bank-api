@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from transactions.models import Account
-from transactions.api.serializers import UserSerializer as TranUserSerializer
+from transactions.api.serializers import (
+    UserSerializer as TranUserSerializer, FamilyMemberSerializer)
 
 from ..models import User, Family, FamilyMember
 
@@ -101,14 +102,31 @@ class usersDetails(APIView):
         })
 
 
+class familyMembers(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        users = User.objects.filter(
+            familymember__family__familymember__user=request.user
+        ).exclude(pk=request.user.pk).order_by("firstname")
+
+        serializer = FamilyMemberSerializer(instance=users, many=True)
+
+        return Response({
+            'users': serializer.data,
+            'status': status.HTTP_200_OK,
+        })
+
+
 class users(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
-        family = Family.objects.filter(familymember__user=request.user).first()
         users = User.objects.filter(
-            familymember__family=family).order_by("firstname")
+            familymember__family__familymember__user=request.user
+        ).order_by("firstname")
         serializer = TranUserSerializer(instance=users, many=True)
 
         return Response({
@@ -139,6 +157,7 @@ class users(APIView):
                 'status': status.HTTP_200_OK,
             })
         else:
+            print(serializer.errors)
             return Response({
                 "status": status.HTTP_404_NOT_FOUND,
                 'message': serializer.errors,

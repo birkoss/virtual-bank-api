@@ -86,7 +86,17 @@ class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 
+# @TODO : Verify instance and remove if not used anymore
 class UserSerializer(serializers.ModelSerializer):
+    accounts = AccountPreviewSerializer(source='account_set', many=True)
+
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'firstname',
+                  'lastname', 'is_children', 'accounts']
+
+
+class FamilyMemberSerializer(serializers.ModelSerializer):
     accounts = AccountPreviewSerializer(source='account_set', many=True)
 
     class Meta:
