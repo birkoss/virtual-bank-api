@@ -88,7 +88,7 @@ class TransactionCategoryWriteSerializer(serializers.ModelSerializer):
 
 # @TODO : Verify instance and remove if not used anymore
 class UserSerializer(serializers.ModelSerializer):
-    accounts = AccountPreviewSerializer(source='account_set', many=True)
+    accounts = AccountSerializer(source='account_set', many=True)
 
     class Meta:
         model = User

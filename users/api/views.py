@@ -61,6 +61,7 @@ class registerUser(APIView):
             familyMember.save()
 
             # Set balance of the current account to 1000
+            # @TODO: Make this a tracable transaction (without category? to make it a system transaction)
             Account.objects.filter(user=user).update(balance=1000)
 
             return Response({
