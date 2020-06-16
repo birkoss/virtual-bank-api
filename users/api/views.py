@@ -124,6 +124,12 @@ class users(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, format=None):
+        if request.user.is_children:
+            return Response({
+                "status": status.HTTP_401_UNAUTHORIZED,
+                'message': "Children can't access this.",
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
         users = User.objects.filter(
             familymember__family__familymember__user=request.user
         ).order_by("firstname")
@@ -147,9 +153,10 @@ class users(APIView):
                 is_children=request.data['isChildren']
             )
 
-            # Add it to our family
+            # Pick our family
             family = Family.objects.filter(user=request.user).first()
 
+            # Add it as a Family Member
             familyMember = FamilyMember(user=user, family=family)
             familyMember.save()
 
@@ -157,7 +164,6 @@ class users(APIView):
                 'status': status.HTTP_200_OK,
             })
         else:
-            print(serializer.errors)
             return Response({
                 "status": status.HTTP_404_NOT_FOUND,
                 'message': serializer.errors,
