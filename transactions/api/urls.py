@@ -13,6 +13,18 @@ urlpatterns = [
     ),
 
     path(
+        'v1/sendMoney',
+        api_views.sendMoney.as_view(),
+        name='send-money'
+    ),
+
+    path(
+        'v1/withdrawMoney',
+        api_views.withdrawMoney.as_view(),
+        name='withdraw-money'
+    ),
+
+    path(
         'v1/transactionsStats',
         api_views.transactionsStats.as_view(),
         name='transactions-stats'

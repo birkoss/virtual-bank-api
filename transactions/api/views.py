@@ -16,6 +16,97 @@ from .serializers import (AccountSerializer, TransactionSerializer,
                           TransactionCategoryWriteSerializer)
 
 
+def createTransaction(serializer, accountFrom, accountTo, amount):
+    serializer.save(account_from=accountFrom, date_validated=datetime.now())
+
+    accountFrom.balance -= amount
+    accountFrom.save()
+
+    accountTo.balance += amount
+    accountTo.save()
+
+
+class sendMoney(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        serializer = TransactionWriteSerializer(data=request.data)
+
+        accountFrom = Account.objects.filter(user=request.user).first()
+
+        if serializer.is_valid():
+            # Watch the balance first
+            if accountFrom.balance < int(request.data['amount']):
+                return Response({
+                    "status": status.HTTP_400_BAD_REQUEST,
+                    'message': "Not enough balance to do this",
+                }, status=status.HTTP_400_BAD_REQUEST)
+
+            amount = serializer.validated_data['amount']
+
+            accountTo = serializer.validated_data['account_to']
+
+            createTransaction(serializer, accountFrom, accountTo, amount)
+
+            return Response({
+                'balance': accountFrom.balance,
+                'status': status.HTTP_200_OK,
+            })
+        else:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                'message': serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class withdrawMoney(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+
+        # This is only for Parents
+        if request.user.is_children:
+            return Response({
+                "status": status.HTTP_401_UNAUTHORIZED,
+                'message': "Children can't access this.",
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        accountTo = Account.objects.filter(user=request.user).first()
+
+        accountFrom = Account.objects.filter(
+            pk=request.data['account_to'], user__familymember__family__familymember__user=request.user).first()
+
+        print(accountFrom)
+        print(accountTo)
+
+        if accountFrom is None:
+            return Response({
+                "status": status.HTTP_401_UNAUTHORIZED,
+                'message': "You can't withdraw from someone not in your family",
+            }, status=status.HTTP_401_UNAUTHORIZED)
+
+        request.data['account_to'] = accountTo.pk
+        serializer = TransactionWriteSerializer(data=request.data)
+
+        if serializer.is_valid():
+
+            amount = serializer.validated_data['amount']
+
+            createTransaction(serializer, accountFrom, accountTo, amount)
+
+            return Response({
+                'balance': accountTo.balance,
+                'status': status.HTTP_200_OK,
+            })
+        else:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                'message': serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
 class transactions(APIView):
     authentication_classes = [authentication.TokenAuthentication]
     permission_classes = [permissions.IsAuthenticated]
@@ -37,6 +128,7 @@ class transactions(APIView):
             'transactions': serializer.data
         }, status=status.HTTP_200_OK)
 
+    # @TODO : REMOVE once the app is accepted on Apple and Android
     def post(self, request, format=None):
         serializer = TransactionWriteSerializer(data=request.data)
 
