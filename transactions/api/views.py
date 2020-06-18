@@ -288,12 +288,15 @@ class stats(APIView):
 
     def get(self, request, format=None):
         accounts = Account.objects.filter(user=request.user)
+        accounts_serializer = AccountSerializer(instance=accounts, many=True)
 
-        serializer = AccountSerializer(instance=accounts, many=True)
+        goals = Goal.objects.filter(account__user=request.user)
+        goals_serializer = GoalSerializer(instance=goals, many=True)
 
         return Response({
             'status': status.HTTP_200_OK,
-            'accounts': serializer.data,
+            'accounts': accounts_serializer.data,
+            'goals': goals_serializer.data,
         })
 
 
