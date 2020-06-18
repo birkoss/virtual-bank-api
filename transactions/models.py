@@ -62,3 +62,9 @@ class Transaction(UUIDModel, TimeStampedModel, models.Model):
     amount = models.IntegerField(default=0)
     date_validated = models.DateTimeField(null=True)
     description = models.CharField(max_length=200, blank=True)
+
+
+class Goal(UUIDModel, TimeStampedModel, models.Model):
+    account = models.ForeignKey(Account, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=0)
+    name = models.CharField(max_length=100)
