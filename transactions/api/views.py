@@ -8,12 +8,12 @@ from rest_framework.views import APIView
 
 from users.models import User, Family
 
-from ..models import Account, TransactionCategory, Transaction
+from ..models import Account, TransactionCategory, Transaction, Goal
 
 from .serializers import (AccountSerializer, TransactionSerializer,
                           TransactionWriteSerializer,
                           TransactionCategorySerializer,
-                          TransactionCategoryWriteSerializer)
+                          TransactionCategoryWriteSerializer, GoalSerializer)
 
 
 def createTransaction(serializer, accountFrom, accountTo, amount):
@@ -76,15 +76,14 @@ class withdrawMoney(APIView):
         accountTo = Account.objects.filter(user=request.user).first()
 
         accountFrom = Account.objects.filter(
-            pk=request.data['account_to'], user__familymember__family__familymember__user=request.user).first()
-
-        print(accountFrom)
-        print(accountTo)
+            pk=request.data['account_to'],
+            user__familymember__family__familymember__user=request.user
+        ).first()
 
         if accountFrom is None:
             return Response({
                 "status": status.HTTP_401_UNAUTHORIZED,
-                'message': "You can't withdraw from someone not in your family",
+                'message': "You can't withdraw outside your family",
             }, status=status.HTTP_401_UNAUTHORIZED)
 
         request.data['account_to'] = accountTo.pk
@@ -216,6 +215,62 @@ class transactionsCategories(APIView):
 
         if serializer.is_valid():
             serializer.save(user=request.user)
+
+            return Response({
+                'status': status.HTTP_200_OK,
+            })
+        else:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                'message': serializer.errors,
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+
+class goalsDetails(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request, goal_id, format=None):
+        goal = Goal.objects.filter(
+            id=goal_id, account__user=request.user
+        ).first()
+
+        if goal is None:
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                "message": "This is not a valid goal"
+            }, status.HTTP_404_NOT_FOUND)
+
+        goal.delete()
+
+        return Response({
+            "status": status.HTTP_200_OK
+        })
+
+
+class goals(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request, format=None):
+        account = Account.objects.filter(user=request.user).first()
+
+        goals = Goal.objects.filter(account=account)
+
+        serializer = GoalSerializer(instance=goals, many=True)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'goals': serializer.data
+        }, status=status.HTTP_200_OK)
+
+    def post(self, request, format=None):
+        serializer = GoalSerializer(data=request.data)
+
+        account = Account.objects.filter(user=request.user).first()
+
+        if serializer.is_valid():
+            serializer.save(account=account)
 
             return Response({
                 'status': status.HTTP_200_OK,

@@ -42,6 +42,18 @@ urlpatterns = [
     ),
 
     path(
+        'v1/goals',
+        api_views.goals.as_view(),
+        name='goals'
+    ),
+    path(
+        'v1/goals/<str:goal_id>',
+        api_views.goalsDetails.as_view(),
+        name='goals-details'
+    ),
+
+
+    path(
         'v1/accounts',
         api_views.accounts.as_view(),
         name='accounts'

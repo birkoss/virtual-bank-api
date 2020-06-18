@@ -3,7 +3,7 @@ from rest_framework import serializers
 from users.models import User
 
 from ..models import (Account, AccountType, AccountStatus,
-                      Transaction, TransactionCategory)
+                      Transaction, TransactionCategory, Goal)
 
 
 class AccountStatusSerializer(serializers.ModelSerializer):
@@ -43,6 +43,12 @@ class SimpleTransactionCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionCategory
         fields = ['id', 'name']
+
+
+class GoalSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Goal
+        fields = ['id', 'name', 'amount']
 
 
 class TransactionCategorySerializer(serializers.ModelSerializer):
