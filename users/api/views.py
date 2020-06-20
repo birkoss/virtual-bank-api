@@ -7,7 +7,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from transactions.models import Account, Transaction
+from transactions.models import Account, Transaction, TransactionCategory
 from transactions.api.serializers import (
     UserSerializer as TranUserSerializer, FamilyMemberSerializer)
 
