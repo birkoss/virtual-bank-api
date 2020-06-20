@@ -306,8 +306,7 @@ class accounts(APIView):
 
     def get(self, request, format=None):
         user = User.objects.filter(pk=request.user.pk).first()
-        print(user.friends)
-        print(request.user.friends)
+
         filters = Q()
         filters.add(Q(user__families__slave=request.user), Q.OR)
         filters.add(Q(user__friends__slave=request.user), Q.OR)

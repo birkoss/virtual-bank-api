@@ -199,7 +199,28 @@ class account(APIView):
 
         serializer = TranUserSerializer(instance=request.user)
 
+        # Determine if we need to show a wizard
+        need_wizard = False
+
+        # @TODO: Create Helpers (also used in users endpoint)
+        users = User.objects.filter(
+            familymember__family__familymember__user=request.user
+        ).first()
+
+        if users is None:
+            need_wizard = True
+        else:
+            # @TODO: Create Helpers (also used in transactions endpoint)
+            categories = TransactionCategory.objects.filter(
+                user=request.user,
+                is_active=True
+            ).first()
+
+            if categories is None:
+                need_wizard = True
+
         return Response({
             'account': serializer.data,
             'status': status.HTTP_200_OK,
+            'need_wizard': need_wizard
         })
