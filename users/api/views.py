@@ -22,8 +22,10 @@ class loginAsUser(APIView):
 
     def post(self, request, format=None):
 
+        # Verify it's a valid Children from the same family
         user = User.objects.filter(
             pk=request.data['user_id'],
+            is_children=True,
             familymember__family__familymember__user=request.user
         ).first()
 
