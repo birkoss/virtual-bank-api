@@ -16,6 +16,31 @@ from ..models import User, Family, FamilyMember
 from .serializers import UserSerializer
 
 
+class loginAsUser(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+
+        user = User.objects.filter(
+            pk=request.data['user_id'],
+            familymember__family__familymember__user=request.user
+        ).first()
+
+        if user is None:
+            return Response({
+                "status": status.HTTP_404_NOT_FOUND,
+                'message': 'Invalid information'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        token = Token.objects.get(user=user)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+            'token': token.key,
+        }, status=status.HTTP_200_OK)
+
+
 class loginUser(APIView):
     def post(self, request, format=None):
 
