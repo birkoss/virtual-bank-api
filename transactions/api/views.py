@@ -108,7 +108,6 @@ class withdrawMoney(APIView):
             user_from = User.objects.filter(account=accountFrom).first()
 
             if user_from is not None and user_from.expo_token != "" and user_to.expo_token is not None:
-                :
                 send_push_message(user_from.expo_token, request.user.firstname +
                                   " withdraw " + str(amount) + " $ from your account")
 
