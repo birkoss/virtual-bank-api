@@ -54,7 +54,7 @@ class sendMoney(APIView):
             # Notify the recipient
             user_to = User.objects.filter(account=accountTo).first()
 
-            if user_to is not None and user_to.expo_token != "":
+            if user_to is not None and user_to.expo_token != "" and user_to.expo_token is not None:
                 send_push_message(user_to.expo_token, request.user.firstname +
                                   " sent you " + str(amount) + " $")
 
@@ -107,7 +107,8 @@ class withdrawMoney(APIView):
             # Notify the recipient
             user_from = User.objects.filter(account=accountFrom).first()
 
-            if user_from is not None and user_from.expo_token != "":
+            if user_from is not None and user_from.expo_token != "" and user_to.expo_token is not None:
+                :
                 send_push_message(user_from.expo_token, request.user.firstname +
                                   " withdraw " + str(amount) + " $ from your account")
 
