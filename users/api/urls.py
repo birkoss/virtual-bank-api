@@ -14,6 +14,9 @@ urlpatterns = [
     path('v1/familyMembers', api_views.familyMembers.as_view(),
          name='family-members'),
 
+    path('v1/saveNotificationToken', api_views.saveNotificationToken.as_view(),
+         name='save-notification-token'),
+
     path('v1/users', api_views.users.as_view(), name='users'),
     path('v1/users/<str:user_id>',
          api_views.usersDetails.as_view(), name='users-details'),

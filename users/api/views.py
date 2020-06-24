@@ -251,3 +251,28 @@ class account(APIView):
             'status': status.HTTP_200_OK,
             'need_wizard': need_wizard
         })
+
+
+class saveNotificationToken(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, format=None):
+        if 'expoToken' not in request.data:
+            return Response({
+                "status": status.HTTP_400_BAD_REQUEST,
+                'message': "Missing Expo Token",
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        expo_token = request.data['expoToken']
+
+        # Reset all previous user with this Token
+        User.objects.filter(expo_token=expo_token).update(expo_token='')
+
+        # Save the token
+        print("Saving Token: " + expo_token)
+        User.objects.filter(pk=request.user.pk).update(expo_token=expo_token)
+
+        return Response({
+            'status': status.HTTP_200_OK,
+        })

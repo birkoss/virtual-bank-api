@@ -27,6 +27,8 @@ class User(PermissionsMixin, UUIDModel, TimeStampedModel, AbstractBaseUser):
     firstname = models.CharField(max_length=100, default='')
     lastname = models.CharField(max_length=100, default='')
 
+    expo_token = models.CharField(max_length=100, blank=True, null=True)
+
     USERNAME_FIELD = 'email'
 
     objects = UserManager()

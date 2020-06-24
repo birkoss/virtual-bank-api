@@ -7,7 +7,7 @@ DEBUG = True
 CORS_ORIGIN_ALLOW_ALL = True
 
 
-ALLOWED_HOSTS = ['192.168.0.136', 'localhost']
+ALLOWED_HOSTS = ['192.168.0.120', 'localhost']
 
 
 DATABASES = {

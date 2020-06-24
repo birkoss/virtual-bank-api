@@ -15,6 +15,8 @@ from .serializers import (AccountSerializer, TransactionSerializer,
                           TransactionCategorySerializer,
                           TransactionCategoryWriteSerializer, GoalSerializer)
 
+from core.helpers import send_push_message
+
 
 def createTransaction(serializer, accountFrom, accountTo, amount):
     serializer.save(account_from=accountFrom, date_validated=datetime.now())
@@ -48,6 +50,13 @@ class sendMoney(APIView):
             accountTo = serializer.validated_data['account_to']
 
             createTransaction(serializer, accountFrom, accountTo, amount)
+
+            # Notify the recipient
+            user_to = User.objects.filter(account=accountTo).first()
+
+            if user_to is not None and user_to.expo_token != "":
+                send_push_message(user_to.expo_token, request.user.firstname +
+                                  " sent you " + str(amount) + " $")
 
             return Response({
                 'balance': accountFrom.balance,
@@ -94,6 +103,13 @@ class withdrawMoney(APIView):
             amount = serializer.validated_data['amount']
 
             createTransaction(serializer, accountFrom, accountTo, amount)
+
+            # Notify the recipient
+            user_from = User.objects.filter(account=accountFrom).first()
+
+            if user_from is not None and user_from.expo_token != "":
+                send_push_message(user_from.expo_token, request.user.firstname +
+                                  " withdraw " + str(amount) + " $ from your account")
 
             return Response({
                 'balance': accountTo.balance,
